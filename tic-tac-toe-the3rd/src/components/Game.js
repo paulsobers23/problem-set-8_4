@@ -47,10 +47,12 @@ function Board(props) {
       setHistory(recordedHistory);
     }
   }
-  // change board that I currently to one of the board history 
+
+
   function travel(i) {
     const boardInHistory = [...history];
     setBoard(boardInHistory[i]);
+    setTurn((i % 2 === 0) ? 'O' : 'X');
   }
 
   const moves = history.map((cell, i) => {
