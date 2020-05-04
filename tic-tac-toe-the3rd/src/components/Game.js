@@ -1,11 +1,12 @@
 import React, { useContext } from 'react';
 import Cells from './Cell';
-import BoardContext from './context/BoardContext';
+import BoardContext from '../context/BoardContext';
 
 
 function Board(props) {
-    
-  const { board, setBoard, turn, setTurn } = useContext(BoardContext);
+
+  const { board, setBoard, turn, setTurn, history, setHistory } = useContext(BoardContext);
+  console.log('history from contex', history)
 
   function declareWinner(board) {
     const winningConditions = [
@@ -22,8 +23,6 @@ function Board(props) {
     for (let i = 0; i < winningConditions.length; i++) {
       const [a, b, c] = winningConditions[i];
       if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-        console.log(board);
-        console.log(`The winner is player ${board[a]}`);
         return board[a];
       }
     }
@@ -40,23 +39,40 @@ function Board(props) {
   function clickHandler(num) {
     // whenever someone clicks a button, they apply a sate to that specific button
     // we can set this state into the boardState and then check if there's a winner
-    if (!winner || board[num]) {
+    if (!winner && !board[num]) {
       const updatedBoard = [...board];
       updatedBoard[num] = turn;
       setBoard(updatedBoard);
-
-      console.log(board);
       setTurn((turn === 'X') ? 'O' : 'X');
+      const recordedHistory = history.slice();
+      recordedHistory.push(updatedBoard);
+      setHistory(recordedHistory);
     }
-    console.log('i have been clicked', turn)
   }
+  // change board that I currently to one of the board history 
+  function travel(i) {
+    const boardInHistory = [...history];
+    setBoard(boardInHistory[i]);
+  }
+
+  const moves = history.map((cell, i) => {
+    const actions = i ? `Go to move ${i}` : 'Go to game start';
+    return (
+      <li key={i}>
+        <button onClick={() => travel(i)}>{actions}</button>
+      </li>
+    );
+  });
 
   return (
     <div className="board">
+      <h1>Player {turn}, it's your turn</h1>
       <h3>{status}</h3>
+      <h3>{moves}</h3>
 
       <div className="row">
-        <Cells click={() => clickHandler(0)} value={board[0]}/>
+        <Cells click={() => clickHandler(0)
+        } value = { board[0]}/>
         <Cells click={() => clickHandler(1)} value={board[1]}/>
         <Cells click={() => clickHandler(2)} value={board[2]}/>
       </div>
@@ -77,14 +93,4 @@ function Board(props) {
   );
 }
 
-function Game() {
-  const { turn } = useContext(BoardContext);
-  return (
-    <div>
-      <h1>Player {turn}, it's your turn</h1>
-      <Board turn={turn}/>
-    </div>
-  );
-}
-
-export default Game;
+export default Board;
