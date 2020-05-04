@@ -4,9 +4,7 @@ import BoardContext from '../context/BoardContext';
 
 
 function Board(props) {
-
   const { board, setBoard, turn, setTurn, history, setHistory } = useContext(BoardContext);
-  console.log('history from contex', history)
 
   function declareWinner(board) {
     const winningConditions = [
